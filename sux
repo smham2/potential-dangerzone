@@ -1,0 +1,40 @@
+#!/bin/bash
+#
+# SUX (SU with X11)
+# Stanley Hammond - 2012
+#
+# This script allows a root user to super user as another user with X11 access
+# It is designed to allow you to run a X11 application as another user.
+# Good for testing, however be warned that there are security implications with this.
+#
+# I cannot take full credit for this script. Another user came up with the XAUTH information.
+# I forgot where I found that information, but credit goes to them.
+# Only root can run this, sudo sux will not work.
+#
+# This script is provided AS-IS.  I am not responsible for any damage this script my
+# cause to your system.  Use it at your own risk.
+#
+
+function help {
+	echo ""
+	echo "su with X11 display"
+	echo "Usage: $0 userid command"
+	echo ""
+}
+
+if [ $# -eq 0 ] || [ $# -eq 1 ]
+	then
+	help
+	exit 0
+fi
+
+USER=$1
+COMMAND=$2
+
+DN=`echo $DISPLAY | awk -F: '{ print $2 }' | awk -F. '{ print $1 }'`
+
+XAUTHCOOKIE=`xauth list | grep $HOSTNAME | grep unix:$DN`
+XAUTHPATH=`echo $XAUTHCOOKIE | awk '{ print $1 }'`
+
+su -l $USER -c "xauth add $XAUTHCOOKIE ; $COMMAND; xauth remove $XAUTHPATH"
+#echo "xauth add $XAUTHCOOKIE ; $COMMAND; xauth remove $XAUTHPATH"

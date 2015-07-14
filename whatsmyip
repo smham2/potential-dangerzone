@@ -1,0 +1,14 @@
+#!/bin/bash
+#
+# What's my IP address?
+# Stanley Hammond - 2014
+#
+# This is a basic script that will display the IP address(es) of the host you are logged into.
+# I created this because on some Linux and Mac systems, all I wanted was the IP address and 
+# did not want the extra information provided by ifconfig
+#
+# This script is provided AS-IS.  I am not responsible for any damage this script my
+# cause to your system.  Use it at your own risk.
+#
+
+ifconfig | grep "inet addr" | awk '{ print $2 }' | awk -F: '{ print $2 }' | grep -v 127.0.0.1

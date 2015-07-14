@@ -1,0 +1,41 @@
+#!/bin/bash
+#
+# Compare
+# Stanley Hammond - 2013-2014
+#
+# This is a basic script that will compare the contents of two directories
+# Nothing special about this, just needed a script that would let me know if
+# the same files were in two different locations.  Good for syncing directories.
+# 
+# This script is provided AS-IS.  I am not responsible for any damage this script my
+# cause to your system.  Use it at your own risk.
+#
+
+function help {
+	echo ""
+	echo "Compare Files in Directories"
+	echo "Usage: $0 directory1 directory2"
+	echo ""
+}
+
+if [ $# -eq 0 ] || [ $# -eq 1 ]
+	then
+	help
+	exit 0
+fi
+
+DIRECTORY1=$1
+DIRECTORY2=$2
+
+# This compensates for find's behavior with directories and files that have spaces in them
+SAVEIFS=$IFS
+IFS=$(echo -en "\n\b")
+
+for i in `find $DIRECTORY1 -not -type d -print | sed -e 's,'"^$DIRECTORY1\/"',,g'`
+do 
+	if [ ! -e $DIRECTORY2/"$i" ]
+		then echo "$DIRECTORY1/$i"
+	fi
+done
+
+IFS=$SAVEIFS

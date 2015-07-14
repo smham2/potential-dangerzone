@@ -1,0 +1,43 @@
+#!/bin/bash
+#
+# SGE qstat viewer
+# Provides an easy to read and visualize way of checking to see who is
+# running a job in grid engine and how many jobs are on hold.
+# Thanks to Kevin Guay for the trick to show all users when qstat is run.
+#
+# 2012 - Original code
+# 5/29/2014 - Added code to display only users that have submitted jobs
+# 12/2014 - Added code to show held jobs and jobs that have errors
+#
+# Stan M. Hammond
+#
+# Sun Grid Engine/Open Grid Scheduler or Univa Grid Engine is needed to run this script
+#
+# This script is provided AS-IS.  I am not responsible for any damage this script my
+# cause to your system.  Use it at your own risk.
+#
+
+echo "SGE qstat"
+echo "------------------------------------------------------------------------------------------------------"
+
+for i in `qstat -u "*" | awk '{ print $4 }' | sort | uniq | grep -v user`
+do
+	r=`qstat -u $i | awk '{ print $5 }' | grep "r" | wc -l`
+	qw=`qstat -u $i | awk '{ print $5 }' | grep "qw" | wc -l`
+	ql=`qstat -u $i | awk '{ print $3 }' | grep "QLOGIN" | wc -l`
+	h=`qstat -u $i | awk '{ print $5 }' | grep -E "h[qw|r]" | wc -l` 
+	e=`qstat -u $i | awk '{ print $5 }' | grep "E" | wc -l`
+
+	if [ "${#i}" -le "7" ]
+	then
+		i="$i\t"
+	fi
+
+	if [ "${#r}" -le "1" ]
+	then
+		r="$r\t"
+	fi
+	
+	echo -e "$i\t Running Jobs: $r\t Waiting Jobs: $qw\t Held Jobs: $h\t Errors: $e\t QLOGIN sessions: $ql" 
+done
+
