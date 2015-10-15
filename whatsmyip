@@ -7,8 +7,18 @@
 # I created this because on some Linux and Mac systems, all I wanted was the IP address and 
 # did not want the extra information provided by ifconfig
 #
+# 10/2015: Added support to return the IP address depending on the architecture of the system
+#
 # This script is provided AS-IS.  I am not responsible for any damage this script my
 # cause to your system.  Use it at your own risk.
 #
 
-ifconfig | grep "inet addr" | awk '{ print $2 }' | awk -F: '{ print $2 }' | grep -v 127.0.0.1
+arch=`uname`
+
+if [ $arch == "Linux"]
+then
+	ifconfig | grep "inet addr" | awk '{ print $2 }' | awk -F: '{ print $2 }' | grep -v 127.0.0.1
+else if [ $arch == "Darwin" ]
+then
+	ifconfig | grep "inet " | awk '{ print $2 }' | grep -v 127.0.0.1
+fi
